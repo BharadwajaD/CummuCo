@@ -1,98 +1,86 @@
 import React, { useState } from "react";
+import { postFetch } from "../utils/fetch";
 import "../styles/NewRide.css";
 
 const NewRide = () => {
-  const [rideDetails, setTripDetails] = useState({
-    rideId: "",
-    driverName: "",
-    driverPhone: "",
-    cabNo: "",
-    companionNumber: "",
+
+    const [isError, setIsError] = useState(false);
+    const [rideId, setRideId] = useState('');
+
+  const [rideDetails, setRideDetails] = useState({
+    driver_name: "",
+    driver_phone: "",
+    cab_number: "",
+    companion_number: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTripDetails({ ...rideDetails, [name]: value });
+    setRideDetails({ ...rideDetails, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("YOUR_API_ENDPOINT", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(rideDetails),
-      });
+    const url = 'http://127.0.0.1:8000/ride'
 
-      if (response.ok) {
-        console.log("Data sent successfully");
-        // Handle success, reset the form, etc.
-      } else {
-        console.error("Failed to send data");
-        // Handle failure, show error message, etc.
-      }
-    } catch (error) {
-      console.error("Error occurred:", error);
-    }
+      postFetch(url, rideDetails)
+          .then(body => {
+              setRideId(body.rideId)
+          })
+          .catch(err => {
+              setIsError(true)
+          })
   };
 
   return (
     <div className="ride-form">
+      <h2> Share your ride </h2>
       <form onSubmit={handleSubmit}>
         <div className="form-block">
-          <label htmlFor="rideId">Trip ID:</label>
+
+          <label htmlFor="driver_name">Driver Name:</label>
           <input
             type="text"
-            id="rideId"
-            name="rideId"
-            value={rideDetails.rideId}
+            id="driver_name"
+            name="driver_name"
+            value={rideDetails.driver_name}
             onChange={handleChange}
           />
 
-          <label htmlFor="driverName">Driver Name:</label>
+          <label htmlFor="driver_phone">Driver Phone No:</label>
           <input
             type="text"
-            id="driverName"
-            name="driverName"
-            value={rideDetails.driverName}
+            id="driver_phone"
+            name="driver_phone"
+            value={rideDetails.driver_phone}
             onChange={handleChange}
           />
 
-          <label htmlFor="driverPhone">Driver Phone No:</label>
+          <label htmlFor="cab_number">Cab No:</label>
           <input
             type="text"
-            id="driverPhone"
-            name="driverPhone"
-            value={rideDetails.driverPhone}
-            onChange={handleChange}
-          />
-
-          <label htmlFor="cabNo">Cab No:</label>
-          <input
-            type="text"
-            id="cabNo"
-            name="cabNo"
-            value={rideDetails.cabNo}
+            id="cab_number"
+            name="cab_number"
+            value={rideDetails.cab_number}
             onChange={handleChange}
           />
         </div>
 
         <div className="form-block">
-          <label htmlFor="companionNumber">Companion Number:</label>
+          <label htmlFor="companion_number">Companion Number:</label>
           <input
             type="text"
-            id="companionNumber"
-            name="companionNumber"
-            value={rideDetails.companionNumber}
+            id="companion_number"
+            name="companion_number"
+            value={rideDetails.companion_number}
             onChange={handleChange}
           />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Send Link</button>
       </form>
+      {rideId.length > 0 && <p className="rideid"> Your ride id: {rideId}</p>}
     </div>
   );
 };
