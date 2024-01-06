@@ -1,5 +1,9 @@
 const express = require('express');
 const { RedisClient } = require('../models/rideRedis');
+const {jwtAuth} = require('../middlewares/jwtAuth');
+
+//TODO: use uid generator to avoid overflow
+let ride_count = 0
 
 //TODO: use pool of clients here
 const redisClient = new RedisClient()
@@ -20,6 +24,18 @@ router.post('/', async (req, res) => {
     }
 });
 
+//admin access
+router.get('/', jwtAuth ,async (req, res) => {
+    const role = req.role
+    if (role != 'admin'){
+        res.status(403).json({message: 'requires admin access'})
+    }
+    redisClient.getAll()
+        .then(dict => res.json(dict))
+        .catch(err => res.status(500).json({message: err.message}))
+})
+
+
 //updates the exisiting ride object
 router.post('/:id', async (req, res) => {
 
@@ -37,32 +53,27 @@ router.post('/:id', async (req, res) => {
 });
 
 //fetches the latest info of the ride object
+//TODO: handle if rideId is not found
 router.get('/:id', async (req, res) => {
     const rideId = req.params.id;
 
-    try {
-        console.log(rideId)
-        const rideObject = await redisClient.get(rideId);
-        res.json(rideObject);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    redisClient.get(rideId)
+        .then(rideObject => res.json(rideObject))
+        .catch( err =>  res.status(500).json({ message: err.message }))
 });
 
 //deletes the ride info
 router.delete('/:id', async (req, res) => {
     const rideId = req.params.id;
 
-    try {
-        await redisClient.del(rideId);
-        res.json({ message: 'Ride deleted successfully', rideId });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    redisClient.del(rideId)
+        .then(() => res.json({ message: 'Ride deleted successfully', rideId }))
+        .catch (err =>  res.status(500).json({ message: err.message }))
+    
 });
 
 function generateRideId() {
-    return 'ride_' + Math.random().toString(36).substr(2, 9);
+    return 'ride_' + ride_count.toString()
 }
 
 module.exports = router;

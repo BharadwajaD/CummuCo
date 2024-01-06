@@ -7,6 +7,23 @@ class RedisClient{
         this.client = redis.createClient()
     }
 
+    async getAll(){
+        if( !this.client.isOpen){
+            await this.client.connect()
+        }
+
+        //TODO: This might make client slow
+        const keys = await this.client.keys('*')
+
+        const values = await Promise.all(keys.map(async (key) => {
+            const val = await this.client.get(key);
+            return { [key]: JSON.parse(val) };
+        }));
+
+        return values
+
+    }
+
     async get(rideId) {
         if( !this.client.isOpen){
             await this.client.connect()
