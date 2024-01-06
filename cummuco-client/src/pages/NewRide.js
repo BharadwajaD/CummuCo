@@ -11,6 +11,9 @@ const NewRide = () => {
     driver_name: "",
     driver_phone: "",
     cab_number: "",
+    pickup_point: "",
+    drop_point: "",
+    current_location: "",
     companion_number: "",
   });
 
@@ -65,21 +68,51 @@ const NewRide = () => {
             value={rideDetails.cab_number}
             onChange={handleChange}
           />
-        </div>
 
-        <div className="form-block">
-          <label htmlFor="companion_number">Companion Number:</label>
+          <label htmlFor="pickup_point">Cab No:</label>
           <input
             type="text"
-            id="companion_number"
-            name="companion_number"
-            value={rideDetails.companion_number}
+            id="pickup_point"
+            name="pickup_point"
+            value={rideDetails.pickup_point}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="drop_point">Drop Point:</label>
+          <input
+            type="text"
+            id="drop_point"
+            name="drop_point"
+            value={rideDetails.drop_point}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="pickup_point">Pickup Point:</label>
+          <input
+            type="text"
+            id="pickup_point"
+            name="pickup_point"
+            value={rideDetails.pickup_point}
+            onChange={handleChange}
+          />
+        </div>
+
+      //TODO: this should be auto completed using location api
+      //TODO: write a function which updates location every t time
+        <div className="form-block">
+          <label htmlFor="current_location">Current Location:</label>
+          <input
+            type="text"
+            id="current_location"
+            name="current_location"
+            value={rideDetails.current_location}
             onChange={handleChange}
           />
         </div>
 
         <button type="submit">Send Link</button>
       </form>
+      {isError && <p className="error-message"> 'Something went wrong' </p>}
       {rideId.length > 0 && <p className="rideid"> Your ride id: {rideId}</p>}
     </div>
   );

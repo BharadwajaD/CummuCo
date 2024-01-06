@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import NewRide from "./pages/NewRide";
 import Error from "./pages/Error";
 import SignIn from "./pages/SignIn";
+import { ViewRide } from "./pages/ViewRide";
 
 function App() {
    
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element = <Home /> />
         <Route path="/signin" element = <SignIn /> />
         <Route path="/newride" element = <NewRide /> />
+        <Route path="/ride/:id" element = <ViewRide /> />
         <Route path="/error" element={<Error />} />
 
       </Routes>
