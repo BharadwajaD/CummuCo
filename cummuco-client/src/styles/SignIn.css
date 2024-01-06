@@ -1,0 +1,26 @@
+.SignIn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+.SignIn label {
+  display: block;
+}
+.SignIn input {
+  padding: 0.5rem;
+  margin: 0.75rem 0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+.SignIn button {
+  border-radius: 0.25rem;
+}
+.SignIn button:hover {
+  background-color: #d1d1d1;
+}
+.SignInError {
+  color: red;
+}
