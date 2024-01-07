@@ -54,6 +54,21 @@ function getUser(username, password) {
   });
 }
 
+
+function getUserName(user_id) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT username FROM users WHERE id = ?', [user_id], async (err, username) => {
+      if (err) {
+        reject(new Error('Internal server error'));
+      } else if (!username) {
+        reject(new Error('Invalid user_id'));
+      } else {
+          resolve(username);
+      }
+    });
+  });
+}
+
 function setUser(username, password) {
   return new Promise((resolve, reject) => {
     db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
@@ -124,4 +139,4 @@ function isValidRole(user_id, ride_id, role){
   });
 }
 
-module.exports = { db, getUser, setUser, insertRide, insertUserRole, isValidRole };
+module.exports = { db, getUser, getUserName, setUser, insertRide, insertUserRole, isValidRole };

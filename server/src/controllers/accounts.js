@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const db = require('../models/db'); // Import the database module
+const { jwtAuth } = require('../middlewares/jwtAuth');
 
 const router = express.Router();
 
@@ -27,6 +28,10 @@ router.post('/signup', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+
+router.get('/role', jwtAuth, (req, res) => {
+    res.send({role: req.role})
+})
 
 module.exports = router;
 
