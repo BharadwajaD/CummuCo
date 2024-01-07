@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import NewRide from "./pages/NewRide";
 import Error from "./pages/Error";
 import SignIn from "./pages/SignIn";
+import Signup from "./pages/Signup";
 import { ViewRide } from "./pages/ViewRide";
 import { postFetch } from "./utils/fetch";
 
@@ -34,7 +35,7 @@ function App() {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
             });
-            console.log(location)
+            //console.log(position.coords, location)
             setError(null);
         };
 
@@ -71,6 +72,7 @@ function App() {
 
         <Route path="/" element = <Home /> />
         <Route path="/signin" element = <SignIn /> />
+        <Route path="/signup" element = <Signup /> />
         <Route path="/newride" element = <NewRide _setRideId={setRideId} _setRole={setRole}/> />
         <Route path="/ride/:id" element = <ViewRide /> />
         <Route path="/error" element={<Error />} />

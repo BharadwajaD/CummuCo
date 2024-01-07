@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { postFetch } from "../utils/fetch";
 import "../styles/NewRide.css";
+import { setValue } from "../utils/storage";
 
 const NewRide = ({_setRideId, _setRole}) => {
 
@@ -32,6 +33,10 @@ const NewRide = ({_setRideId, _setRole}) => {
                 setRideId(body.rideId)
                 _setRideId(body.rideId)
                 _setRole('traveller')
+
+                if(body.token){
+                    setValue('token', body.token)
+                }
             })
             .catch(err => {
                 setIsError(true)
