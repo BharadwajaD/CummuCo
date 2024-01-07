@@ -14,14 +14,15 @@ function jwtAuth(req, res, next) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token format' });
     }
 
-    jwt.verify(tokenParts[1], 'your-secret-key', (err, user, role, ride_id) => {
+    jwt.verify(tokenParts[1], 'your-secret-key', (err, token_payload) => {
         if (err) {
             return res.status(403).json({ message: 'Forbidden: Invalid token' });
         }
 
-        req.user = user;
-        req.role = role;
-        req.ride_id = ride_id;
+        req.user_id = token_payload.user_id;
+        req.role = token_payload.role;
+        req.ride_id = token_payload.ride_id;
+
 
         next();
     });

@@ -8,8 +8,9 @@ router.post('/signin', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const userRole = await db.getUser(username, password);
-        const token = jwt.sign(userRole, 'your-secret-key', { expiresIn: '10h' });
+        const tokenPayload = await db.getUser(username, password);
+        console.log('signin: ', tokenPayload)
+        const token = jwt.sign(tokenPayload, 'your-secret-key', { expiresIn: '10h' });
         res.send({ token: token });
     } catch (error) {
         res.status(400).json({ message: error.message });

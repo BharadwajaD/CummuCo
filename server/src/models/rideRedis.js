@@ -28,18 +28,19 @@ class RedisClient{
         if( !this.client.isOpen){
             await this.client.connect()
         }
-        return this.client.get(rideId).then(val => JSON.parse(val))
+        return this.client.get(rideId.toString()).then(val => JSON.parse(val))
     }
 
     async set(rideId, rideObj){
         if( !this.client.isOpen){
             await this.client.connect()
         }
+
         const ridejson = JSON.stringify(rideObj)
-        return this.client.set(rideId, ridejson)
+        return this.client.set(rideId.toString(), ridejson)
     }
 
-    async update(rideId, newrideObj){
+    async update(rideId, ride_updates){
         if( !this.client.isOpen){
             await this.client.connect()
         }
@@ -48,16 +49,15 @@ class RedisClient{
         Object.entries(ride_updates).forEach(([key, value]) => {
             ride[key] = value
         });
-        console.log(rideId, ride)
 
-        return this.client.set(rideId, JSON.stringify(ride))
+        return this.client.set(rideId.toString(), JSON.stringify(ride))
     }
 
     async del(rideId){
         if( !this.client.isOpen){
             await this.client.connect()
         }
-        return this.client.del(rideId)
+        return this.client.del(rideId.toString())
     }
 }
 

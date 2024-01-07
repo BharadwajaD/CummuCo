@@ -1,32 +1,31 @@
 const express = require('express');
 const { RedisClient } = require('../models/rideRedis');
+const jwt = require('jsonwebtoken');
 const {jwtAuth} = require('../middlewares/jwtAuth');
-
-//TODO: use uid generator to avoid overflow
-let ride_count = 0
+const db = require('../models/db'); 
 
 //TODO: use pool of clients here
 const redisClient = new RedisClient()
 
 const router = express.Router();
 
-//TODO: The following endpoints should be allowed only for traveller/companion of that ride
 
 //creates new ride object
-router.post('/', async (req, res) => {
+router.post('/', jwtAuth, async (req, res) => {
     try {
-        const rideId = generateRideId();
-        const ride_updates = req.body;
-        let ride = await redisClient.get(rideId)
 
-        console.log(ride)
-        Object.entries(ride_updates).forEach(([key, value]) => {
-            ride[key] = value
-        });
-        console.log(ride)
+        const ride = req.body;
 
-        await redisClient.set(rideId, ride)
-        res.status(201).json({ message: 'Ride created successfully', rideId });
+        const ride_id = await db.insertRide(JSON.stringify(ride)).then(r => r.rideId)
+
+        //the caller of this endpoint will be the traveller
+        const tokenPayload = await db.insertUserRole(req.user_id, ride_id, 'traveller')
+        const token = jwt.sign(tokenPayload, 'your-secret-key', { expiresIn: '10h' });
+
+        console.log('post: ', ride_id, ride)
+        await redisClient.set(ride_id, ride)
+        res.status(201).json({ token, rideId: ride_id });
+
 
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -35,8 +34,8 @@ router.post('/', async (req, res) => {
 
 //admin access
 router.get('/', jwtAuth ,async (req, res) => {
-    const role = req.role
-    if (role != 'admin'){
+
+    if (req.role != 'admin'){
         res.status(403).json({message: 'requires admin access'})
     }
     redisClient.getAll()
@@ -46,7 +45,12 @@ router.get('/', jwtAuth ,async (req, res) => {
 
 
 //updates the exisiting ride object
-router.post('/:id', async (req, res) => {
+//only traveller of this ride can access this api
+router.post('/:id', jwtAuth, async (req, res) => {
+
+    if(!db.isValidRole(req.user_id, req.ride_id, 'traveller')){
+        res.status(403).json({message: 'requires traveller access'})
+    }
 
     const rideId = req.params.id;
     const updatedRideObject = req.body;
@@ -63,28 +67,46 @@ router.post('/:id', async (req, res) => {
 
 //fetches the latest info of the ride object
 //TODO: handle if rideId is not found
-router.get('/:id', async (req, res) => {
+//only traveller and companian of this ride can access this endpoint
+router.get('/:id', jwtAuth, async (req, res) => {
+
     const rideId = req.params.id;
+    const {share} = req.query;
+
+    let token
+    //insert companian into the db
+    console.log(share)
+    if(share){
+        const tokenPayload = await db.insertUserRole(req.user_id, req.ride_id, 'companian')
+        token = jwt.sign(tokenPayload, 'your-secret-key', { expiresIn: '10h' });
+    }
+
+    if(!db.isValidRole(req.user_id, req.ride_id, 'traveller') && !db.isValidRole(req.user_id, req.ride_id, 'companian')){
+        res.status(403).json({message: 'requires traveller access'})
+    }
 
     redisClient.get(rideId)
-        .then(rideObject => res.json(rideObject))
+        .then(ride => {
+            if(!token) res.json(ride)
+            else res.json({token, ride})
+        })
         .catch( err =>  res.status(500).json({ message: err.message }))
 });
 
 //deletes the ride info
+//only traveller of this ride can access this api
 router.delete('/:id', async (req, res) => {
     const rideId = req.params.id;
+
+    if(!db.isValidRole(req.user_id, req.ride_id, 'traveller')){
+        res.status(403).json({message: 'requires traveller access'})
+    }
 
     redisClient.del(rideId)
         .then(() => res.json({ message: 'Ride deleted successfully', rideId }))
         .catch (err =>  res.status(500).json({ message: err.message }))
     
 });
-
-function generateRideId() {
-    ride_count += 1
-    return 'ride_' + ride_count.toString()
-}
 
 module.exports = router;
 
