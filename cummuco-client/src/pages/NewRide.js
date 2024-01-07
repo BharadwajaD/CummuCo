@@ -3,7 +3,9 @@ import { postFetch } from "../utils/fetch";
 import "../styles/NewRide.css";
 import { setValue } from "../utils/storage";
 
-const NewRide = ({_setRideId, _setRole}) => {
+const NewRide = ({setRole_}) => {
+
+    setRole_('traveller')
 
     const [rideId, setRideId] = useState('');
     const [rideDetails, setRideDetails] = useState({
@@ -31,8 +33,6 @@ const NewRide = ({_setRideId, _setRole}) => {
         postFetch(url, rideDetails)
             .then(body => {
                 setRideId(body.rideId)
-                _setRideId(body.rideId)
-                _setRole('traveller')
 
                 if(body.token){
                     setValue('token', body.token)
@@ -96,11 +96,20 @@ const NewRide = ({_setRideId, _setRole}) => {
           />
         </div>
 
+          <label htmlFor="companion_number">CompanionNumber:</label>
+          <input
+            type="text"
+            id="companion_number"
+            name="companion_number"
+            value={rideDetails.companion_number}
+            onChange={handleChange}
+          />
 
         <button type="submit">Send Link</button>
       </form>
       {isError && <p className="error-message"> 'Something went wrong' </p>}
       {rideId.length > 0 && <p className="rideid"> Your ride id: {rideId}</p>}
+      {rideId.length > 0 && <p className="rideid"> Message sent to : {rideDetails.companion_number}</p>}
     </div>
   );
 };

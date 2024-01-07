@@ -21,6 +21,8 @@ function App() {
     const [error, setError] = useState(null);
     const [rideId, setRideId] = useState(null);
     const [role, setRole] = useState('');
+    
+    console.log(role)
 
     //location watch and update should be done from travellers side
     useEffect(() => {
@@ -35,7 +37,7 @@ function App() {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
             });
-            //console.log(position.coords, location)
+            console.log(position.coords, location)
             setError(null);
         };
 
@@ -73,7 +75,7 @@ function App() {
         <Route path="/" element = <Home /> />
         <Route path="/signin" element = <SignIn /> />
         <Route path="/signup" element = <Signup /> />
-        <Route path="/newride" element = <NewRide _setRideId={setRideId} _setRole={setRole}/> />
+        <Route path="/newride" element = <NewRide setRole_ = {setRole}/> />
         <Route path="/ride/:id" element = <ViewRide /> />
         <Route path="/error" element={<Error />} />
 

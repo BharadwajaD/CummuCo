@@ -1,5 +1,5 @@
-const accSid = 'ACc1268054dc3c615a9449afa3d73f4134'
-const authToken = 'f8577ced86310ce9d8d61081d1422359'
+const accSid = process.env.ACCSID
+const authToken = process.env.AUTH_TOKEN
 const twilioClient = require('twilio')(accSid, authToken)
 
 

@@ -4,7 +4,7 @@ import "../styles/SignIn.css";
 import { postFetch } from "../utils/fetch";
 import { setValue } from "../utils/storage";
 
-const SignIn = () => {
+const SignIn = ({redirect="/newride"}) => {
 
     const navigate = useNavigate();
     const [isError, setIsError] = useState(false);
@@ -18,7 +18,7 @@ const SignIn = () => {
         postFetch(url, {'username': username, 'password': password}, false).then(body => {
             const token = body.token
             setValue('token', token)
-            navigate("/newride")
+            navigate(redirect)
         }).catch(() => {
             setIsError(true)
         })
@@ -45,6 +45,7 @@ const SignIn = () => {
         )}
 
         <button onClick={handleSignIn}>Sign In</button>
+        <button onClick={() => navigate('/signup')}>Register</button>
         </div>
     );
 };
