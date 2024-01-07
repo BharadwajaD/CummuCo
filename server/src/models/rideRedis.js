@@ -46,6 +46,7 @@ class RedisClient{
         }
 
         let ride = await this.get(rideId)
+        console.log(rideId, ride)
         Object.entries(ride_updates).forEach(([key, value]) => {
             ride[key] = value
         });

@@ -18,7 +18,7 @@ const SignIn = ({redirect="/newride"}) => {
         postFetch(url, {'username': username, 'password': password}, false).then(body => {
             const token = body.token
             setValue('token', token)
-            navigate(redirect)
+            window.location.replace(redirect)
         }).catch(() => {
             setIsError(true)
         })

@@ -33,6 +33,7 @@ const NewRide = ({setRole_}) => {
         postFetch(url, rideDetails)
             .then(body => {
                 setRideId(body.rideId)
+                setValue('ride_id', body.rideId)
 
                 if(body.token){
                     setValue('token', body.token)

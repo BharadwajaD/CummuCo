@@ -25,6 +25,7 @@ router.post('/', jwtAuth, async (req, res) => {
         await redisClient.set(ride_id, ride)
 
         const uname = await db.getUserName(req.user_id)
+        console.log(uname)
         sendSMS(uname, ride.companion_number, `http://127.0.0.1:8000/ride/${ride_id}?share=true`)
 
         res.status(201).json({ token, rideId: ride_id });
@@ -60,7 +61,9 @@ router.post('/:id', jwtAuth, async (req, res) => {
 
     try {
 
+        console.log(rideId, updatedRideObject)
         await redisClient.update(rideId, updatedRideObject)
+        console.log(updatedRideObject)
         res.json({ message: 'Ride updated successfully', rideId });
 
     } catch (error) {

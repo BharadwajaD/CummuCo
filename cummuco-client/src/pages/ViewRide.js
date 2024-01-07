@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getFetch } from "../utils/fetch";
 import  SignIn  from "./SignIn";
+import Map from "../utils/Map";
 import "../styles/ViewRide.css";
 
 export function ViewRide(){
@@ -30,6 +31,15 @@ export function ViewRide(){
 
         return () => clearInterval(intervalId)
     }, [])
+
+    /*
+    if(rideInfo.token){
+        setRideInfo(rideInfo.ride)
+    }
+                <Map latitude={rideInfo.location.latitute} longitude={rideInfo.location.longitude}/>
+    */
+
+    console.log(rideInfo)
 
     
     return (
@@ -59,6 +69,7 @@ export function ViewRide(){
                 </div>
                 </div>
             )}
+                {rideInfo && rideInfo.location && <Map latitude={rideInfo.location.latitude} longitude={rideInfo.location.longitude}/>}
         </div>
     );
 }

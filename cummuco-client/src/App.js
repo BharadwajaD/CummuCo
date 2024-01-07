@@ -11,6 +11,7 @@ import SignIn from "./pages/SignIn";
 import Signup from "./pages/Signup";
 import { ViewRide } from "./pages/ViewRide";
 import { postFetch } from "./utils/fetch";
+import { getValue } from "./utils/storage";
 
 
 function App() {
@@ -19,10 +20,9 @@ function App() {
 
     const [location, setLocation] = useState(null);
     const [error, setError] = useState(null);
-    const [rideId, setRideId] = useState(null);
     const [role, setRole] = useState('');
     
-    console.log(role)
+    //console.log(role)
 
     //location watch and update should be done from travellers side
     useEffect(() => {
@@ -37,7 +37,8 @@ function App() {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
             });
-            console.log(position.coords, location)
+            //console.log(position, 'location: ', location)
+            console.log(position, location)
             setError(null);
         };
 
@@ -62,8 +63,10 @@ function App() {
     }, [role]); 
 
     const updateLocation = (updatedLocation) => {
-        if (!rideId) return ;
+        const rideId = getValue('ride_id')
+        console.log(rideId)
         const url = `http://127.0.0.1:8000/ride/${rideId}`
+        console.log('update :', location, url)
         postFetch(url, {'location': updatedLocation}).then().catch(err => console.error(err.message))
     };
 
@@ -75,7 +78,7 @@ function App() {
         <Route path="/" element = <Home /> />
         <Route path="/signin" element = <SignIn /> />
         <Route path="/signup" element = <Signup /> />
-        <Route path="/newride" element = <NewRide setRole_ = {setRole}/> />
+        <Route path="/newride" element = <NewRide setRole_ = {setRole} /> />
         <Route path="/ride/:id" element = <ViewRide /> />
         <Route path="/error" element={<Error />} />
 
