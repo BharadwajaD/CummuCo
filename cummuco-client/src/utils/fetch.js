@@ -1,9 +1,9 @@
-import { getAuth } from "./auth"
+import { getValue } from "./storage"
 
 export async function getFetch(url, isAuth = true){
     let token = ''
     if(isAuth){
-        token = getAuth()
+        token = getValue()
     }
 
     const res = await fetch(url, {
@@ -24,7 +24,7 @@ export async function getFetch(url, isAuth = true){
 export async function postFetch(url, body, isAuth = true){
     let token = ''
     if(isAuth){
-        token = getAuth()
+        token = getValue()
     }
 
     const req = {

@@ -10,13 +10,22 @@ const redisClient = new RedisClient()
 
 const router = express.Router();
 
+//TODO: The following endpoints should be allowed only for traveller/companion of that ride
+
 //creates new ride object
 router.post('/', async (req, res) => {
     try {
         const rideId = generateRideId();
-        const rideObject = req.body;
+        const ride_updates = req.body;
+        let ride = await redisClient.get(rideId)
 
-        await redisClient.set(rideId, rideObject)
+        console.log(ride)
+        Object.entries(ride_updates).forEach(([key, value]) => {
+            ride[key] = value
+        });
+        console.log(ride)
+
+        await redisClient.set(rideId, ride)
         res.status(201).json({ message: 'Ride created successfully', rideId });
 
     } catch (error) {
@@ -73,6 +82,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 function generateRideId() {
+    ride_count += 1
     return 'ride_' + ride_count.toString()
 }
 

@@ -43,8 +43,14 @@ class RedisClient{
         if( !this.client.isOpen){
             await this.client.connect()
         }
-        const newridejson = JSON.stringify(newrideObj)
-        return this.client.set(rideId, newridejson)
+
+        let ride = await this.get(rideId)
+        Object.entries(ride_updates).forEach(([key, value]) => {
+            ride[key] = value
+        });
+        console.log(rideId, ride)
+
+        return this.client.set(rideId, JSON.stringify(ride))
     }
 
     async del(rideId){

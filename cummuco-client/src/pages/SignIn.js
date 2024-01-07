@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/SignIn.css";
 import { postFetch } from "../utils/fetch";
-import { storeAuth } from "../utils/auth";
+import { setValue } from "../utils/storage";
 
 const SignIn = () => {
 
@@ -17,7 +17,7 @@ const SignIn = () => {
 
         postFetch(url, {'username': username, 'password': password}, false).then(body => {
             const token = body.token
-            storeAuth('token', token)
+            setValue('token', token)
             navigate("/newride")
         }).catch(() => {
             setIsError(true)
