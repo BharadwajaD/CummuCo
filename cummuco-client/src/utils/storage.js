@@ -1,4 +1,4 @@
-const storage = localStorage
+const storage = sessionStorage
 
 export function setValue(key='token', value){
     storage.setItem(key, value)

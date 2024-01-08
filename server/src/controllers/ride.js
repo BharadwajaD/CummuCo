@@ -24,9 +24,8 @@ router.post('/', jwtAuth, async (req, res) => {
 
         await redisClient.set(ride_id, ride)
 
-        const uname = await db.getUserName(req.user_id)
-        console.log(uname)
-        sendSMS(uname, ride.companion_number, `http://127.0.0.1:8000/ride/${ride_id}?share=true`)
+        const user = await db.getUserName(req.user_id)
+        //sendSMS(user.username, ride.companion_number, `http://127.0.0.1:3000/ride/${ride_id}?share=true`)
 
         res.status(201).json({ token, rideId: ride_id });
 

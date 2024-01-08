@@ -3,9 +3,8 @@ import { postFetch } from "../utils/fetch";
 import "../styles/NewRide.css";
 import { setValue } from "../utils/storage";
 
-const NewRide = ({setRole_}) => {
+const NewRide = ({setRole_, rideids_, setRideids_}) => {
 
-    setRole_('traveller')
 
     const [rideId, setRideId] = useState('');
     const [rideDetails, setRideDetails] = useState({
@@ -33,13 +32,17 @@ const NewRide = ({setRole_}) => {
         postFetch(url, rideDetails)
             .then(body => {
                 setRideId(body.rideId)
+                setRideids_( body.rideId)
                 setValue('ride_id', body.rideId)
+                console.log(body.rideId)
+                setRole_('traveller')
 
                 if(body.token){
                     setValue('token', body.token)
                 }
             })
             .catch(err => {
+                console.error(err.message)
                 setIsError(true)
             })
     };
