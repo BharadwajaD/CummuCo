@@ -105,6 +105,34 @@ function insertRide(ride_info) {
   });
 }
 
+
+// Function to insert user role into the database only if it doesn't already exist
+function insertUserRole(user_id, ride_id, role) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Check if the user, ride, and role combination already exists
+      const isValid = await isValidRole(user_id, ride_id, role);
+
+      if (!isValid) {
+        // If not, perform the insertion
+        const insertQuery = 'INSERT INTO user_ride_roles (user_id, ride_id, role) VALUES (?, ?, ?)';
+        db.run(insertQuery, [user_id, ride_id, role], function (err) {
+          if (err) {
+            reject(err.message);
+          } else {
+            resolve({ user_id, role, ride_id });
+          }
+        });
+      } else {
+        resolve({ user_id, role, ride_id });
+        resolve(null);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+/*
 function insertUserRole(user_id, ride_id, role) {
   const insertQuery = 'INSERT INTO user_ride_roles (user_id, ride_id, role) VALUES (?, ?, ?)';
 
@@ -118,6 +146,7 @@ function insertUserRole(user_id, ride_id, role) {
     });
   });
 }
+*/
 
 function isValidRole(user_id, ride_id, role){
   const query = `
@@ -133,6 +162,7 @@ function isValidRole(user_id, ride_id, role){
       if (err) {
         reject(err.message);
       } else {
+          console.log('isValidRole: ', user_id, role, ride_id, row)
         resolve(row.entry_exists === 1);
       }
     });

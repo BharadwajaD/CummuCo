@@ -1,4 +1,4 @@
-import { getValue } from "./storage"
+import { getValue, setValue } from "./storage"
 
 export async function getFetch(url, isAuth = true){
     let token = ''
@@ -14,10 +14,19 @@ export async function getFetch(url, isAuth = true){
           },
       })
 
-    if(!res.ok){
+    console.log(res.status)
+    if(res.status == 403){
+        throw new Error('forbidden')
+    }else if(!res.ok){
         throw new Error('error occured')
     }
-    return res.json()
+
+    const body = await res.json()
+    if(body.token){
+        setValue('token', body.token)
+    }
+
+    return body
 
 }
 
@@ -40,8 +49,17 @@ export async function postFetch(url, body, isAuth = true){
 
     //console.log(req, res)
 
-    if(!res.ok){
+    console.log(res.status)
+    if(res.status == 403){
+        throw new Error('forbidden')
+    }else if(!res.ok){
         throw new Error('error occured')
     }
-    return res.json()
+
+    const res_body = await res.json()
+    if(body.token){
+        setValue('token', body.token)
+    }
+
+    return res_body
 }

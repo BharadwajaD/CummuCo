@@ -39,7 +39,7 @@ router.post('/', jwtAuth, async (req, res) => {
 router.get('/', jwtAuth ,async (req, res) => {
 
     if (req.role != 'admin'){
-        res.status(403).json({message: 'requires admin access'})
+        return res.status(403).json({message: 'requires admin access'})
     }
     redisClient.getAll()
         .then(dict => res.json(dict))
@@ -52,7 +52,7 @@ router.get('/', jwtAuth ,async (req, res) => {
 router.post('/:id', jwtAuth, async (req, res) => {
 
     if(!db.isValidRole(req.user_id, req.ride_id, 'traveller')){
-        res.status(403).json({message: 'requires traveller access'})
+        return res.status(403).json({message: 'requires traveller access'})
     }
 
     const rideId = req.params.id;
@@ -60,9 +60,7 @@ router.post('/:id', jwtAuth, async (req, res) => {
 
     try {
 
-        console.log(rideId, updatedRideObject)
         await redisClient.update(rideId, updatedRideObject)
-        console.log(updatedRideObject)
         res.json({ message: 'Ride updated successfully', rideId });
 
     } catch (error) {
@@ -75,22 +73,25 @@ router.post('/:id', jwtAuth, async (req, res) => {
 //only traveller and companian of this ride can access this endpoint
 router.get('/:id', jwtAuth, async (req, res) => {
 
-    const rideId = req.params.id;
+    const ride_id = req.params.id;
     const {share} = req.query;
 
     let token
     //insert companian into the db
-    console.log(share)
-    if(share){
-        const tokenPayload = await db.insertUserRole(req.user_id, req.ride_id, 'companian')
+    if(share === 'true'){
+        const tokenPayload = await db.insertUserRole(req.user_id, ride_id, 'companion')
         token = jwt.sign(tokenPayload, 'your-secret-key', { expiresIn: '10h' });
+        return res.send({token})
     }
 
-    if(!db.isValidRole(req.user_id, req.ride_id, 'traveller') && !db.isValidRole(req.user_id, req.ride_id, 'companian')){
-        res.status(403).json({message: 'requires traveller access'})
+    const isCompanion = await db.isValidRole( req.user_id, req.ride_id, 'companion')
+    const isTraveller = await db.isValidRole( req.user_id, req.ride_id, 'traveller')
+    if(!isTraveller && !isCompanion){
+        console.log('forbidden', req.user_id, req.ride_id, req.role)
+        return res.status(403).json({message: 'requires traveller or companion access'})
     }
 
-    redisClient.get(rideId)
+    redisClient.get(ride_id)
         .then(ride => {
             if(!token) res.json(ride)
             else res.json({token, ride})
@@ -104,7 +105,7 @@ router.delete('/:id', async (req, res) => {
     const rideId = req.params.id;
 
     if(!db.isValidRole(req.user_id, req.ride_id, 'traveller')){
-        res.status(403).json({message: 'requires traveller access'})
+        return res.status(403).json({message: 'requires traveller access'})
     }
 
     redisClient.del(rideId)
