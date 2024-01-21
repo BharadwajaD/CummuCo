@@ -28,7 +28,7 @@ const Signup = () => {
         <h2>Register</h2>
         <div className="userdetails">
         <label htmlFor="username">Username:</label>
-        <input type="text" id="username" name="username" value={username} 
+        <input autoComplete="off" type="text" id="username" name="username" value={username} 
         onChange={(e) => {setUsername(e.target.value)
         }}/>
 

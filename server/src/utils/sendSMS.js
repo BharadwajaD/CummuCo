@@ -7,7 +7,7 @@ function sendSMS(traveller_name, contact_number, ride_link){
     twilioClient.messages
         .create({
             body: `Your friend ${traveller_name} shared his ride with you. Click on the link to track their ride: ${ride_link}`,
-            from: '+12017205537',
+            from: '+16195678723',
             to: contact_number
         })
         .then(message => console.log(message.sid))

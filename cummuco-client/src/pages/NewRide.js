@@ -50,7 +50,7 @@ const NewRide = ({setRole_, rideids_, setRideids_}) => {
   return (
     <div className="ride-form">
       <h2> Share your ride </h2>
-      <form onSubmit={handleSubmit}>
+      <form autoComplete="false" onSubmit={handleSubmit}>
         <div className="form-block">
 
           <label htmlFor="driver_name">Driver Name:</label>
@@ -105,6 +105,7 @@ const NewRide = ({setRole_, rideids_, setRideids_}) => {
             type="text"
             id="companion_number"
             name="companion_number"
+            pattern="\d{10}" required
             value={rideDetails.companion_number}
             onChange={handleChange}
           />
