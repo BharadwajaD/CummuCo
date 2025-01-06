@@ -3,7 +3,6 @@ const { RedisClient } = require('../models/rideRedis');
 const jwt = require('jsonwebtoken');
 const {jwtAuth} = require('../middlewares/jwtAuth');
 const db = require('../models/db'); 
-const { sendSMS } = require('../utils/sendSMS');
 
 //TODO: use pool of clients here
 const redisClient = new RedisClient()
@@ -25,7 +24,7 @@ router.post('/', jwtAuth, async (req, res) => {
         await redisClient.set(ride_id, ride)
 
         const user = await db.getUserName(req.user_id)
-        sendSMS(user.username, ride.companion_number, `http://127.0.0.1:3000/ride/${ride_id}?share=true`)
+        console.log(user.username, ride.companion_number, `http://127.0.0.1:3000/ride/${ride_id}?share=true`)
 
         res.status(201).json({ token, rideId: ride_id });
 
